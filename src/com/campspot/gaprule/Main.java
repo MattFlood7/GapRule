@@ -128,13 +128,19 @@ public class Main {
 
                 if (!doDateRangesCollide(search, campSite.getReservations())) {
 
+                    List<Boolean> gapRuleResults = new ArrayList<Boolean>();
+
                     for (Reservation reservation : campSite.getReservations()) {
-
-                        campSiteAvailable = doDateWindowsAbideByGapRule(search, reservation, gapRule);
-
-                        if (campSiteAvailable)
-                            break;
+                        gapRuleResults.add(doDateWindowsAbideByGapRule(search, reservation, gapRule));
                     }
+
+                    // Determine if at any point a failure occurred when parsing all reservations
+                    for (boolean result : gapRuleResults) {
+                        campSiteAvailable = campSiteAvailable && result;
+                    }
+
+                } else {
+                    campSiteAvailable = false;
                 }
 
                 if (campSiteAvailable) {
@@ -185,23 +191,15 @@ public class Main {
      */
     private static boolean doDateWindowsAbideByGapRule(ReservationSearch search, Reservation reservation, int gapRule) {
 
-        boolean result = false;
+        int days;
 
-        if (search.getStartDate().equals(reservation.getEndDate())
-                || reservation.getStartDate().equals(search.getEndDate())) {
-
-            result = false;
-
-        } else if (search.getStartDate().isAfter(reservation.getEndDate())) {
-
-            result = getNumDaysBetween(reservation.getEndDate(), search.getStartDate()) < gapRule;
-
+        if (search.getStartDate().isAfter(reservation.getEndDate())) {
+            days = getNumDaysBetween(reservation.getEndDate(), search.getStartDate()) - 1;
         } else {
-
-            result = getNumDaysBetween(search.getEndDate(), reservation.getStartDate()) < gapRule;
+            days = getNumDaysBetween(search.getEndDate(), reservation.getStartDate()) - 1;
         }
 
-        return result;
+        return days < gapRule || days > gapRule;
     }
 
     /**
