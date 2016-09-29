@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="CampspotGapRule">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="CampspotGapRule.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="Sources/joda-time-2.3.jar"/>
+        <pathelement location="sources/json-simple-1.1.1.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target name="cleanall" depends="clean">
+        <delete file="GapRule.jar"/>
+        <delete dir="javadocs" failonerror="false" />
+  	</target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="CampspotGapRule.classpath"/>
+        </javac>
+    </target>
+    <target name="createjar" depends="build" description="Create the GapRule jar file.">
+  		<jar destfile="GapRule.jar">
+  			<fileset dir="bin" excludes="**/*.jar" />
+  			<fileset dir="Sources" includes="**/*.jar" />
+  			<zipgroupfileset dir="Sources" />
+  			<manifest>
+  				<attribute name="Main-Class" value="com.campspot.gaprule.Main" />
+  			</manifest>
+  		</jar>
+  	</target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="javadocs" description="Generate JavaDoc">
+  		<delete dir="javadocs" failonerror="false" />
+  		<mkdir dir="javadocs" />
+  		<javadoc sourcepath="src" destdir="javadocs" failonerror="false" encoding="iso-8859-1" Windowtitle="RTA Java Documentation" Doctitle="CampSpot GapRule Documentation" noqualifier="all">
+  		<classpath>
+  			<fileset dir="Sources">
+  				<include name="**/*.jar" />
+  			</fileset>
+  		</classpath>
+  	</javadoc>
+  </target>
+</project>
